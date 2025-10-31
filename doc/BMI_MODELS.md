@@ -428,7 +428,7 @@ It is possible to configure a formulation to be a combination of several differe
                             "name": "bmi_c",
                             "params": {
                                 "model_type_name": "PET",
-                                "library_file": "bmi_module_libs/libpetbmi.so",
+                                "library_file": "bmi_module_libs/libpetbmi",
                                 "forcing_file": "",
                                 "init_config": "config_dir/cat-10_pet_config.txt",
                                 "allow_exceed_end_time": true,
@@ -444,7 +444,7 @@ It is possible to configure a formulation to be a combination of several differe
                             "name": "bmi_c",
                             "params": {
                                 "model_type_name": "CFE",
-                                "library_file": "bmi_module_libs/libcfebmi.so",
+                                "library_file": "bmi_module_libs/libcfebmi",
                                 "forcing_file": "", 
                                 "init_config": "config_dir/cat-10_bmi_config_cfe_pass.txt",
                                 "allow_exceed_end_time": true,
@@ -466,7 +466,7 @@ It is possible to configure a formulation to be a combination of several differe
                                     "name": "bmi_c++",
                                     "model_type_name": "SLOTH",
                                     "main_output_variable": "z",
-                                    "library_file": "bmi_module_libs/libslothmodel.so",
+                                    "library_file": "bmi_module_libs/libslothmodel",
                                     "init_config": "/dev/null",
                                     "allow_exceed_end_time": true,
                                     "fixed_time_step": false,
