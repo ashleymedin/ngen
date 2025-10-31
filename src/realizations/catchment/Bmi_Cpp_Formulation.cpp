@@ -19,27 +19,33 @@ std::string Bmi_Cpp_Formulation::get_formulation_type() const {
  * @return A shared pointer to a newly constructed model adapter object.
  */
 std::shared_ptr<Bmi_Adapter> Bmi_Cpp_Formulation::construct_model(const geojson::PropertyMap& properties) {
+    printf("Bmi_Cpp_Formulation: construct_model(): starting construction of BMI C++ model adapter\n");
     auto json_prop_itr = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__LIB_FILE);
     if (json_prop_itr == properties.end()) {
         throw std::runtime_error("BMI C++ formulation requires path to library file, but none provided in config");
     }
+    printf("Bmi_Cpp_Formulation: construct_model(): found library file property\n");
     std::string lib_file = json_prop_itr->second.as_string();
-
+    printf("Bmi_Cpp_Formulation: construct_model(): using library file %s\n", lib_file.c_str());
     json_prop_itr = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__CPP_CREATE_FUNC);
+    printf("Bmi_Cpp_Formulation: construct_model(): found create function name property1\n");
     std::string model_create_fname =
             json_prop_itr == properties.end() ? BMI_REALIZATION_CFG_PARAM_OPT__CPP_CREATE_FUNC_DEFAULT : json_prop_itr->second.as_string();
-            
+    printf("Bmi_Cpp_Formulation: construct_model(): using create function name %s\n", model_create_fname.c_str());        
     json_prop_itr = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__CPP_DESTROY_FUNC);
+    printf("Bmi_Cpp_Formulation: construct_model(): found create function name property2\n");
     std::string model_destroy_fname =
             json_prop_itr == properties.end() ? BMI_REALIZATION_CFG_PARAM_OPT__CPP_DESTROY_FUNC_DEFAULT : json_prop_itr->second.as_string();
-
-    return std::make_shared<Bmi_Cpp_Adapter>(
+    printf("Bmi_Cpp_Formulation: construct_model(): using destroy function name %s\n", model_destroy_fname.c_str());
+    auto adapter = std::make_shared<Bmi_Cpp_Adapter>(
                     get_model_type_name(),
                     lib_file,
                     get_bmi_init_config(),
                     is_bmi_model_time_step_fixed(),
                     model_create_fname,
                     model_destroy_fname);
+    std::cerr << "Bmi_Cpp_Formulation: construct_model(): completed construction of BMI C++ model adapter, ptr=" << adapter.get() << std::endl;
+    return adapter;
 }
 
 double Bmi_Cpp_Formulation::get_var_value_as_double(const int& index, const std::string& var_name) {

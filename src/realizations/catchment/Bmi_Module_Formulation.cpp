@@ -291,10 +291,11 @@ namespace realization {
                 validate_parameters(properties);
             }
             // Required parameters first
+            printf("Bmi_Module_Formulation: inner_create_formulation(): initializing required params\n");
             set_bmi_init_config(properties.at(BMI_REALIZATION_CFG_PARAM_REQ__INIT_CONFIG).as_string());
             set_bmi_main_output_var(properties.at(BMI_REALIZATION_CFG_PARAM_REQ__MAIN_OUT_VAR).as_string());
             set_model_type_name(properties.at(BMI_REALIZATION_CFG_PARAM_REQ__MODEL_TYPE).as_string());
-
+            printf("Bmi_Module_Formulation: inner_create_formulation(): initialized required params\n");
             // Then optional ...
 
             auto uses_forcings_it = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__USES_FORCINGS);
@@ -324,11 +325,11 @@ namespace realization {
                             std::pair<std::string, std::string>(names_it.first, names_it.second.as_string()));
                 }
             }
-
+printf("Bmi_Module_Formulation: inner_create_formulation(): initialized optional params\n");
             // Do this next, since after checking whether other input variables are present in the properties, we can
             // now construct the adapter and init the model
             set_bmi_model(construct_model(properties));
-
+printf("Bmi_Module_Formulation: inner_create_formulation(): constructed BMI model\n");
             //Check if any parameter values need to be set on the BMI model,
             //and set them before it is run
             set_initial_bmi_parameters(properties);
@@ -336,7 +337,7 @@ namespace realization {
             // Make sure that this is able to interpret model time and convert to real time, since BMI model time is
             // usually starting at 0 and just counting up
             determine_model_time_offset();
-
+printf("Bmi_Module_Formulation: inner_create_formulation(): determined model time offset\n");
             // Output variable subset and order, if present
             auto out_var_it = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__OUT_VARS);
             if (out_var_it != properties.end()) {
@@ -351,7 +352,7 @@ namespace realization {
             else {
                 set_output_variable_names(get_bmi_model()->GetOutputVarNames());
             }
-
+printf("Bmi_Module_Formulation: inner_create_formulation(): set output variable names\n");
             // Output header fields, if present
             auto out_headers_it = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__OUT_HEADER_FIELDS);
             if (out_headers_it != properties.end()) {
@@ -365,7 +366,7 @@ namespace realization {
             else {
                 set_output_header_fields(get_output_variable_names());
             }
-
+printf("Bmi_Module_Formulation: inner_create_formulation(): set output header fields\n");
             // Output precision, if present
             auto out_precision_it = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__OUTPUT_PRECISION);
             if (out_precision_it != properties.end()) {
@@ -383,6 +384,7 @@ namespace realization {
                         available_forcings.push_back(bmi_var_names_map[output_var_name]);
                 }
             }
+            printf("Bmi_Module_Formulation: inner_create_formulation(): completed formulation creation\n");
         }
         /**
          * @brief Template function for copying iterator range into contiguous array.

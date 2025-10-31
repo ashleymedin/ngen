@@ -485,6 +485,7 @@ namespace realization {
             if (index < modules.size()) {
                 primary_module_index = index;
             }
+        printf("Primary module index set to %d\n", primary_module_index);
         }
 
         /** 
@@ -492,10 +493,11 @@ namespace realization {
          */
         void check_output_var_names() {
             // variable already checked
+            printf("Checking output variable names...\n");
             if (is_out_vars_from_last_mod) {
                 return;
             }
-
+            printf("Output variable names not from last module, checking...\n");
             // get bmi_multi global output variable names
             const std::vector<std::string> &output_var_names = get_output_variable_names();
 
@@ -507,9 +509,10 @@ namespace realization {
                 var_name = iter->first;
                 available_var_names.push_back(var_name);
             }
-
+            printf("Available variable names:\n");
             // check if an output variable listed in the bmi_multi global is a valid variable
             for (int i = 0; i < output_var_names.size(); ++i) {
+                printf("  %s\n", output_var_names[i].c_str());
                 auto it = std::find(available_var_names.begin(), available_var_names.end(), output_var_names[i]);
                 if (it == available_var_names.end()) {
                     throw std::runtime_error(output_var_names[i] + " does not exist in the output name list" + SOURCE_LOC);
@@ -553,6 +556,7 @@ namespace realization {
          */
         double get_var_value_as_double(const int& index, const std::string& var_name) override {
             auto data_provider_iter = availableData.find(var_name);
+            printf("Getting var value for %s\n", var_name.c_str());
             if (data_provider_iter == availableData.end()) {
                 throw external::ExternalIntegrationException(
                         "Multi BMI formulation can't find correct nested module for BMI variable " + var_name + SOURCE_LOC);
@@ -571,6 +575,7 @@ namespace realization {
                                          " when attempting to get values of BMI variable " + var_name + SOURCE_LOC);
                 // TODO: look at adjusting defs to move this function up in class hierarchy (or at least add TODO there)
             }
+            printf("Got var value for %s\n", var_name.c_str());
         }
 
         /**
@@ -584,6 +589,7 @@ namespace realization {
          */
         inline void init_deferred_associations() {
             for (int d = 0; d < deferredProviders.size(); ++d) {
+                printf("Initializing deferred provider for module index %d\n", deferredProviderModuleIndices[d]);
                 std::shared_ptr<data_access::OptionalWrappedDataProvider> &deferredProvider  = deferredProviders[d];
                 // Skip doing anything for any deferred provider that already has its backing provider set
                 if (deferredProvider->isWrappedProviderSet())
@@ -636,18 +642,20 @@ namespace realization {
         std::shared_ptr<T> init_nested_module(int mod_index, std::string identifier, geojson::PropertyMap properties) {
             std::shared_ptr<data_access::GenericDataProvider> wfp = std::make_shared<data_access::WrappedDataProvider>(this);
             std::shared_ptr<T> mod = std::make_shared<T>(identifier, wfp, output);
-
+            printf("Initializing nested module index %d of type %s for catchment %s\n", mod_index,mod->get_model_type_name().c_str(), identifier.c_str());
             // Since this is a nested formulation, support usage of the '{{id}}' syntax for init config file paths.
             Catchment_Formulation::config_pattern_substitution(properties, BMI_REALIZATION_CFG_PARAM_REQ__INIT_CONFIG,
                                                                "{{id}}", id);
-
+            printf("Creating nested module index %d of type %s for catchment %s\n", mod_index,mod->get_model_type_name().c_str(), identifier.c_str());
             // Call create_formulation to perform the rest of the typical initialization steps for the formulation.
             mod->create_formulation(properties);
+            printf("Created nested module index %d of type %s for catchment %s\n", mod_index,mod->get_model_type_name().c_str(), identifier.c_str());
 
             // Set this up for placing in the module_variable_maps member variable
             std::shared_ptr<std::map<std::string, std::string>> var_aliases;
             var_aliases = std::make_shared<std::map<std::string, std::string>>(std::map<std::string, std::string>());
             for (const std::string &var_name : mod->get_bmi_input_variables()) {
+                printf("Processing input variable %s for nested module index %d\n", var_name.c_str(), mod_index);
                 std::string framework_alias = mod->get_config_mapped_variable_name(var_name);
                 (*var_aliases)[framework_alias] = var_name;
                 // If framework_name is not yet in collection from which we have available data sources ...
@@ -662,6 +670,7 @@ namespace realization {
 
             // Also add the output variable aliases
             for (const std::string &var_name : mod->get_bmi_output_variables()) {
+                printf("Processing output variable %s for nested module index %d\n", var_name.c_str(), mod_index);
                 std::string framework_alias = mod->get_config_mapped_variable_name(var_name);
                 (*var_aliases)[framework_alias] = var_name;
                 if (availableData.count(framework_alias) > 0) {
@@ -673,6 +682,7 @@ namespace realization {
                 }
                 availableData[framework_alias] = mod;
             }
+            printf("Nested module index %d initialized.\n", mod_index);
             module_variable_maps[mod_index] = var_aliases;
             return mod;
         }
@@ -717,6 +727,8 @@ namespace realization {
             std::shared_ptr<data_access::OptionalWrappedDataProvider> provider;
             // TODO: make sure only alias is needed
             auto defs_it = default_output_values.find(framework_output_name);
+            printf("Setting up deferred provider for variable %s (framework name %s) for module index %d\n",
+                   bmi_input_var_name.c_str(), framework_output_name.c_str(), mod_index);
             if (defs_it != default_output_values.end()) {
                 // TODO: consider also reading wait count from config
                 provider = std::make_shared<data_access::OptionalWrappedDataProvider>(framework_output_name, defs_it->second, 1);
@@ -724,13 +736,14 @@ namespace realization {
             else {
                 provider = std::make_shared<data_access::OptionalWrappedDataProvider>(framework_output_name);
             }
-
             // Add deferred to collection and module index to collection
             deferredProviders.push_back(provider);
             deferredProviderModuleIndices.push_back(mod_index);
             // Assign as provider within module
             // TODO: per TODO at top, probably can replace bmi_input_var_name here with framework_output_name
             mod->input_forcing_providers[bmi_input_var_name] = provider;
+            printf("Deferred provider for variable %s (framework name %s) set up for module index %d\n",
+                   bmi_input_var_name.c_str(), framework_output_name.c_str(), mod_index);
         }
 
         /** The set of available "forcings" (output variables, plus their mapped aliases) this instance can provide. */

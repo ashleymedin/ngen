@@ -76,7 +76,7 @@ namespace realization {
                 /**
                  * Read the layer descriptions
                 */
-
+                printf("Reading layer configurations...\n");
                 // try to get the json node
                 auto layers_json_array = tree.get_child_optional("layers");
                 //Create the default surface layer
@@ -114,14 +114,14 @@ namespace realization {
                         //VERY SIMILAR TO NESTED MODULE INIT
                     }
                 }
-
+                printf("Finished reading layer configurations.\n");
                 //TODO use the set of layer providers as input for catchments to lookup from
 
                 /**
                  * Read routing configurations from configuration file
                  */      
                 auto possible_routing_configs = tree.get_child_optional("routing");
-                
+                printf("Checking for routing configuration...\n");
                 if (possible_routing_configs) {
                     //Since it is possible to build NGEN without routing support, if we see it in the config
                     //but it isn't enabled in the build, we should at least put up a warning
@@ -134,12 +134,12 @@ namespace realization {
                              <<", but routing support isn't enabled. No routing will occur."<<std::endl;
                 #endif //NGEN_WITH_ROUTING
                  }
-
+                printf("Finished checking for routing configuration.\n");
                 /**
                  * Read catchment configurations from configuration file
                  */      
                 auto possible_catchment_configs = tree.get_child_optional("catchments");
-
+                printf("Reading catchment configurations...\n");
                 if (possible_catchment_configs) {
                     for (std::pair<std::string, boost::property_tree::ptree> catchment_config : *possible_catchment_configs) {
                       int catchment_index = fabric->find(catchment_config.first);
@@ -178,11 +178,12 @@ namespace realization {
                     (*possible_catchment_configs).clear();
 
                 }//end if possible_catchment_configs
-
+                printf("Finished reading catchment configurations.\n");
                 for (geojson::Feature location : *fabric) {
                     if (not this->contains(location->get_id())) {
                         std::shared_ptr<Catchment_Formulation> missing_formulation = this->construct_missing_formulation(
                           location, output_stream, simulation_time_config);
+                          printf("Formulation_Manager: read(): adding missing formulation id=%s\n", location->get_id().c_str());
                         this->add_formulation(missing_formulation);
                     }
                 }
@@ -190,7 +191,8 @@ namespace realization {
 
             void add_formulation(std::shared_ptr<Catchment_Formulation> formulation) {
                 this->formulations.emplace(formulation->get_id(), formulation);
-            }
+    std::cerr << "Formulation_Manager: added formulation id=" << formulation->get_id() << std::endl;
+}
 
             std::shared_ptr<Catchment_Formulation> get_formulation(std::string id) const {
                 // TODO: Implement on-the-fly formulation creation using global parameters
@@ -254,6 +256,7 @@ namespace realization {
              * In particular, this should be called before MPI_Finalize()
              */
             void finalize() {
+                    std::cerr << "Formulation_Manager::finalize(): ENTER\n";
                 // The calls in these loops are staticly dispatched to
                 // Catchment_Formulation::finalize(). That does not
                 // inherit from DataProvider, with its virtual member
@@ -272,9 +275,13 @@ namespace realization {
                 for (auto const& fmap: domain_formulations) {
                     fmap.second->finalize();
                 }
+                std::cerr << "Formulation_Manager::finalize(): finished domain_formulations" << std::endl;
+
 
 #if NGEN_WITH_NETCDF
-                data_access::NetCDFPerFeatureDataProvider::cleanup_shared_providers();
+    std::cout<< "Formulation_Manager::finalize(): calling cleanup_shared_providers()" << std::endl;
+    data_access::NetCDFPerFeatureDataProvider::cleanup_shared_providers();
+    std::cout<< "Formulation_Manager::finalize(): returned from cleanup_shared_providers()\n" << std::endl;
 #endif
             }
 
@@ -394,9 +401,11 @@ namespace realization {
                     throw std::runtime_error(message);
                 }
 
+                printf("Formulation_Manager: construct_formulation_from_config(): ENTER id=%s\n", identifier.c_str());
                 forcing_params forcing_config = this->get_forcing_params(catchment_formulation.forcing.parameters, identifier, simulation_time_config);
                 std::shared_ptr<Catchment_Formulation> constructed_formulation = construct_formulation(catchment_formulation.formulation.type, identifier, forcing_config, output_stream);
                 //, geometry);
+                printf("Creating formulation for catchment %s of type %s\n", identifier.c_str(), catchment_formulation.formulation.type.c_str());
 
                 constructed_formulation->create_formulation(catchment_formulation.formulation.parameters);
                 return constructed_formulation;
@@ -412,6 +421,7 @@ namespace realization {
                 Catchment_Formulation::config_pattern_substitution(global_copy.formulation.parameters,
                                                                    BMI_REALIZATION_CFG_PARAM_REQ__INIT_CONFIG, "{{id}}",
                                                                    identifier);
+                printf("Formulation_Manager: construct_missing_formulation(): creating missing formulation id=%s type=%s\n", identifier.c_str(), global_config.formulation.type.c_str());
                 //Some helpful debugging prints, commented out, but left for later
                 //because they will eventually be used by someone, someday, looking at configurations
                 //being turned into concrecte formulations...
@@ -470,7 +480,7 @@ namespace realization {
                 if (id_index != std::string::npos) {
                     filepattern = filepattern.replace(id_index, sizeof("{{id}}") - 1, identifier);
                 }
-
+printf("Formulation_Manager: get_forcing_params(): searching dir=%s for pattern=%s id=%s\n", path.c_str(), filepattern.c_str(), identifier.c_str());
                 // Create a regular expression used to identify proper file names
                 std::regex pattern(filepattern);
 
@@ -480,7 +490,7 @@ namespace realization {
 
                 // structure representing the member of a directory: https://www.gnu.org/software/libc/manual/html_node/Directory-Entries.html
                 struct dirent *entry = nullptr;
-
+printf("Formulation_Manager: get_forcing_params(): opening dir=%s id=%s\n", path.c_str(), identifier.c_str());
                 // Attempt to open the directory for evaluation
                 directory = opendir(path.c_str());
                 // Allow for a few retries in certain failure situations
@@ -520,13 +530,13 @@ namespace realization {
                     directory = opendir(path.c_str());
                     errMsg = "Received system error number " + std::to_string(errno);
                 }
-
+printf("Formulation_Manager: get_forcing_params(): dir opened=%s id=%s\n", path.c_str(), identifier.c_str());
                 // If the directory could not be opened, throw an error
                 if (directory == nullptr) {
                     errMsg = "Received system error number " + std::to_string(errno);
                     throw std::runtime_error("Error opening forcing data dir '" + path + "' after " + std::to_string(attemptCount) + " attempts: " + errMsg);
                 }
-
+printf("Formulation_Manager: get_forcing_params(): searching for file id=%s\n", identifier.c_str());
                 // Check if the file pattern is a file itself
                 std::ifstream possible_file(path + filepattern);
                 if (possible_file.good()) {
@@ -540,7 +550,7 @@ namespace realization {
                         enable_cache
                     );
                 }
-
+printf("Formulation_Manager: get_forcing_params(): file not found directly, searching dir id=%s\n", identifier.c_str());
                 // If that failed, use regex to find the file
                 bool match;
                 while ((entry = readdir(directory))) {
@@ -562,8 +572,9 @@ namespace realization {
                 }
                 possible_file.close();
                 closedir(directory);
-
+printf("Formulation_Manager: get_forcing_params(): file not found, throwing error id=%s\n", identifier.c_str());
                 throw std::runtime_error("Forcing data could not be found for '" + identifier + "'");
+                printf("Formulation_Manager: get_forcing_params(): EXIT id=%s\n", identifier.c_str());
             }
 
             /**
@@ -575,6 +586,7 @@ namespace realization {
              */
             void parse_external_model_params(boost::property_tree::ptree& model_params, const geojson::Feature catchment_feature) {
                  boost::property_tree::ptree attr {};
+                 printf("Parsing external model parameters for catchment %s...\n", catchment_feature->get_id().c_str());
                  for (decltype(auto) param : model_params) {
                     if (param.second.count("source") == 0) {
                         attr.put_child(param.first, param.second);
@@ -622,7 +634,7 @@ namespace realization {
                                   << param_name << "`\n";
                     }
                 }
-
+printf("Finished parsing external model parameters for catchment %s.\n", catchment_feature->get_id().c_str());
                 model_params.swap(attr);
             }
 

@@ -393,8 +393,12 @@ int main(int argc, char *argv[]) {
     //to map features to their primary id as well as the alternative property
     nexus_collection->update_ids("id");
     std::cout<<"Initializing formulations" << std::endl;
+    std::cout<<"NGen: about to construct Formulation_Manager\n";
     std::shared_ptr<realization::Formulation_Manager> manager = std::make_shared<realization::Formulation_Manager>(REALIZATION_CONFIG_PATH);
+    std::cout<<"NGen: Formulation_Manager constructed\n";
+    std::cout<<"NGen: about to call manager->read()\n";
     manager->read(catchment_collection, utils::getStdOut());
+    std::cout<<"NGen: manager->read() returned\n";
 
     //TODO refactor manager->read so certain configs can be queried before the entire
     //realization collection is created

@@ -332,6 +332,7 @@ double NetCDFPerFeatureDataProvider::get_value(const CatchmentAggrDataSelector& 
 
     if (enable_cache == false)
     {
+        printf("Using no-cache version of NetCDFPerFeatureDataProvider::get_value\n");
         // This cacheless version is slower serially than the cache version, but faster in parallel
         // The cache is not shared between processes which can cause a lot of redundant reads and an IO bottleneck
         // vector start is the catchment index and the time index
@@ -346,6 +347,7 @@ double NetCDFPerFeatureDataProvider::get_value(const CatchmentAggrDataSelector& 
     }
     else
     {
+        printf("Using cache version of NetCDFPerFeatureDataProvider::get_value\n");
         auto stop_time = init_time + selector.get_duration_secs(); // scope hiding! BAD JUJU!
         
         size_t idx2;
@@ -398,6 +400,7 @@ double NetCDFPerFeatureDataProvider::get_value(const CatchmentAggrDataSelector& 
         
         a = 1.0 - ( (t1 - init_time) / time_stride );
         rvalue += (a * raw_values[0]);
+        printf("NetCDFPerFeatureDataProvider::get_value: a=%f, raw_values[0]=%f\n", a, raw_values[0]);
 
         for( size_t i = 1; i < raw_values.size() -1; ++i )
         {

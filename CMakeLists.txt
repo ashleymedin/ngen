@@ -363,7 +363,7 @@ endif()
 if(NGEN_WITH_EXTERN_NOAH_OWP_MODULAR)
     add_dependencies(ngen surfacebmi)
 endif()
-
+target_compile_options(ngen PUBLIC -g)
 target_include_directories(ngen PUBLIC "${NGEN_INC_DIR}")
 
 add_subdirectory("src/core")

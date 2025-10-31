@@ -3,6 +3,11 @@
 #include <exception>
 #include <utility>
 #include <iostream>
+#include <sys/stat.h>
+static inline bool file_exists(const std::string &p) {
+    struct stat sb;
+    return ::stat(p.c_str(), &sb) == 0;
+}
 
 using namespace models::bmi;
 
@@ -30,25 +35,34 @@ Bmi_Cpp_Adapter::Bmi_Cpp_Adapter(const std::string& type_name, std::string libra
                              //TODO: We are passing creator_func as registration_func because AbstractCLibBmiAdapter expects it to exist, but are not using it the same way...may be okay but we may want to generalize that assumption out!
 {
     if (do_initialization) {
+       // Debug: print key inputs and guard suspiciously large strings
+        std::cerr << "Bmi_Cpp_Adapter::ctor: lib_file='" << library_file_path << "' exists="
+                  << (file_exists(library_file_path) ? "yes" : "no")
+                  << " create_fn='" << model_create_fname << "' destroy_fn='" << model_destroy_fname << "'\n";
+        std::cerr << "Bmi_Cpp_Adapter::ctor: bmi_init_config size=" << bmi_init_config.size()
+                  << " preview=\"" << (bmi_init_config.size() > 200 ? bmi_init_config.substr(0,200) : bmi_init_config) << "\"\n";
+
         try {
+            std::cerr << "Bmi_Cpp_Adapter: ctor: calling construct_and_init_backing_model_for_type()\n";
             construct_and_init_backing_model_for_type();
-            // Make sure this is set to 'true' after this function call finishes
             model_initialized = true;
             bmi_model_time_convert_factor = get_time_convert_factor();
         }
-        // Record the exception message before re-throwing to handle subsequent function calls properly
+        catch (const std::bad_alloc &ba) {
+            std::cerr << "Bmi_Cpp_Adapter: ctor: std::bad_alloc: " << ba.what() << "\n";
+            throw;
+        }
         catch (const std::exception &e) {
-            std::clog << e.what() << std::endl;
+            std::cerr << "Bmi_Cpp_Adapter: ctor: std::exception: " << e.what() << "\n";
             model_initialized = true;
-            throw e;
+            throw;
         }
         catch (...) {
-            const std::exception_ptr& e = std::current_exception();
-            // Make sure this is set to 'true' after this function call finishes
-            //TODO: This construct may not be necessary for the C++ adapter because the shared_ptr has a lambda set up to destroy the model?
+            std::cerr << "Bmi_Cpp_Adapter: ctor: unknown exception\n";
             model_initialized = true;
-            throw e;
+            throw;
         }
+        std::cerr << "Bmi_Cpp_Adapter: ctor: completed construct_and_init_backing_model_for_type()\n";
     }
 }
 

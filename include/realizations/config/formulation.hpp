@@ -77,22 +77,28 @@ namespace realization{
      *                model params
      */
     void link_external(geojson::Feature feature){
-
+printf("Formulation: link_external START/n");
         if(type == "bmi_multi"){
             std::vector<geojson::JSONProperty> tmp;
             for(auto& n : nested){
+                printf("Formulation: link_external nested module type=%s\n", n.type.c_str());
                 //Iterate and link any nested modules with this feature
                 if(n.parameters.count("model_params")){
+                    printf("Formulation: link_external linking model_params for nested module type=%s\n", n.type.c_str());
                     n.link_external(feature);
+                    printf("Formulation: link_external linked model_params for nested module type=%s\n", n.type.c_str());
                 }
                 //Need a temporary map to hold the updated formulation properties in
+                printf("Formulation: link_external preparing nested module definition for type=%s\n", n.type.c_str());
                 geojson::PropertyMap map = {};
                 map.emplace("name", geojson::JSONProperty("name", n.type));
                 map.emplace("params", geojson::JSONProperty("", n.parameters));
                 tmp.push_back(geojson::JSONProperty("", map));
+                printf("Formulation: link_external prepared nested module definition for type=%s\n", n.type.c_str());
             }
             //Reset the bmi_multi modules with the now linked module definitions
             parameters.at("modules") = geojson::JSONProperty("modules", tmp);
+            printf("Formulation: link_external linked nested modules for bmi_multi\n");
             return;
         }
         //Short circut

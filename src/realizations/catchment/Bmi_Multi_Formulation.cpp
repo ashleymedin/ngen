@@ -15,18 +15,19 @@
 using namespace realization;
 
 void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap properties, bool needs_param_validation) {
+    printf("Bmi_Multi_Formulation: create_multi_formulation(): starting initialization\n");
     if (needs_param_validation) {
         validate_parameters(properties);
     }
     // Required parameters first, except for "modules"
     set_bmi_main_output_var(properties.at(BMI_REALIZATION_CFG_PARAM_REQ__MAIN_OUT_VAR).as_string());
     set_model_type_name(properties.at(BMI_REALIZATION_CFG_PARAM_REQ__MODEL_TYPE).as_string());
-
+printf("Bmi_Multi_Formulation: create_multi_formulation(): initialized required params\n");
     std::shared_ptr<data_access::WrappedDataProvider> forcing_provider = std::make_shared<data_access::WrappedDataProvider>(forcing.get());
     for (const std::string &forcing_name_or_alias : forcing->get_available_variable_names()) {
         availableData[forcing_name_or_alias] = forcing_provider;
     }
-
+printf("Bmi_Multi_Formulation: create_multi_formulation(): initialized available data map\n");
     // Pull default output values, if any present
     auto defaults_it = properties.find(BMI_REALIZATION_CFG_PARAM_OPT__DEFAULT_OUT_VALS);
     if (defaults_it != properties.end()) {
@@ -37,7 +38,7 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
             default_output_values[default_entry.at("name").as_string()] = default_entry.at("value").as_real_number();
         }
     }
-
+printf("Bmi_Multi_Formulation: create_multi_formulation(): initialized default output values\n");
     // TODO: go back and set this up properly in required params collection
     auto nested_module_configs_it = properties.find(BMI_REALIZATION_CFG_PARAM_REQ__MODULES);
     std::vector<geojson::JSONProperty> nested_module_configs = nested_module_configs_it->second.as_list();
@@ -46,6 +47,7 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
     modules = std::vector<nested_module_ptr>(nested_module_configs.size());
     module_types = std::vector<std::string>(nested_module_configs.size());
     module_variable_maps = std::vector<std::shared_ptr<std::map<std::string, std::string>>>(modules.size());
+    printf("Creating %zu nested modules for bmi_multi formulation %s\n", nested_module_configs.size(), id.c_str());
 
     /* ************************ Begin outer loop: "for sub_formulations_list" ************************ */
     for (size_t i = 0; i < nested_module_configs.size(); ++i) {
@@ -55,6 +57,7 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
         nested_module_ptr module = nullptr;
         bool inactive_type_requested = false;
         module_types[i] = type_name;
+        printf("Bmi_Multi_Formulation: creating nested module index %zu of type %s\n", i, type_name.c_str());
         if (type_name == "bmi_c++") {
             module = init_nested_module<Bmi_Cpp_Formulation>(i, identifier, formulation_config.at("params").get_values());
         }
@@ -89,6 +92,7 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
             throw std::runtime_error(get_formulation_type() + " received unexpected subtype formulation " + type_name);
         }
         modules[i] = module;
+        printf("Bmi_Multi_Formulation: created nested module index %zu of type %s\n", i, type_name.c_str());
 
     } /* ************************ End outer loop: "for sub_formulations_list" ************************ */
 
@@ -147,13 +151,14 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
 
     // check if a requested output variable name is valid, if not, stop the execution
     check_output_var_names();
-
+printf("Bmi_Multi_Formulation: create_multi_formulation(): completed nested module initialization loop\n");
     // initialize available_forcings from nested modules
     for (const nested_module_ptr &module: modules) {
         for (const std::string &out_var_name: module->get_bmi_output_variables()) {
             available_forcings.push_back(module->get_config_mapped_variable_name(out_var_name));
         }
     }
+    printf("Bmi_Multi_Formulation: create_multi_formulation(): initialized available forcings list\n");
 }
 
 /**
