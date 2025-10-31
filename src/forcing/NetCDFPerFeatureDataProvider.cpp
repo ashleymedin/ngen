@@ -57,16 +57,21 @@ NetCDFPerFeatureDataProvider::NetCDFPerFeatureDataProvider(std::string input_pat
         ncvar_cache.emplace(var_name,ncvar);
 
         std::string native_units;
-        try
-        {
-            auto units_att = ncvar.getAtt("units");
-            if ( units_att.isNull() )
-            {
+        try {
+            // safe presence check (getAtt would throw exception if missing)
+            auto units_att = ncvar.getAtts();
+            auto it = units_att.find("units");
+            if (it == units_att.end()) {
                 native_units = "";
             }
-            else
-            {
-                units_att.getValues(native_units);
+            else {
+                auto &units_att = it->second;
+                if (units_att.isNull()) {
+                    native_units = "";
+                }
+                else {
+                    units_att.getValues(native_units);
+                }
             }
         }
         catch(...)
@@ -148,19 +153,23 @@ NetCDFPerFeatureDataProvider::NetCDFPerFeatureDataProvider(std::string input_pat
     double time_scale_factor = 1;
     time_unit = TIME_SECONDS;
     try {
-        auto time_unit_att = time_var.getAtt("units");
-
+        // safe presence check (getAtt would throw exception if missing)
         // if time att is not encoded 
         // TODO determine how this should be handled
+        auto time_unit_att = time_var.getAtts();
+        auto it= time_unit_att.find("units");
         std::string time_unit_str;
-
-        if ( time_unit_att.isNull() )
-        {
-            log_stream << "Warning using defualt time units\n";
+        if (it == time_unit_att.end()) {
+            log_stream << "Warning using default time units\n";
         }
-        else
-        {  
-            time_unit_att.getValues(time_unit_str);
+        else {
+            auto &time_unit_att = it->second;
+            if (time_unit_att.isNull()) {
+                log_stream << "Warning using default time units\n";
+            }
+            else {
+                time_unit_att.getValues(time_unit_str);
+            }
         }
 
         // set time unit and scale factor
@@ -195,32 +204,36 @@ NetCDFPerFeatureDataProvider::NetCDFPerFeatureDataProvider(std::string input_pat
             time_scale_factor = .000000001;
         }
         else {
-            log_stream << "Warning using defualt time units\n";
+            log_stream << "Warning using default time units\n";
         }
     }
     catch(const netCDF::exceptions::NcException& e){
         std::cerr<<e.what()<<std::endl;
-        log_stream << "Warning using defualt time units\n";
+        log_stream << "Warning using default time units\n";
     }
     assert(time_scale_factor != 0); // This should not happen.
 
     std::string epoch_start_str = "01/01/1970 00:00:00";
     try {
-        // read the meta data to get the epoc start
-        auto epoch_att = time_var.getAtt("epoch_start");
-
-        if ( epoch_att.isNull() )
-        {
-            log_stream << "Warning using defualt epoc string\n";
+        // safe presence check (getAtt would throw exception if missing)
+        auto atts = time_var.getAtts();
+        auto it = atts.find("epoch_start");
+        if (it == atts.end()) {
+            log_stream << "Warning using default epoc string\n";
         }
-        else
-        {  
-            epoch_att.getValues(epoch_start_str);
+        else {
+            auto &epoch_att = it->second;
+            if (epoch_att.isNull()) {
+                log_stream << "Warning using default epoc string\n";
+            }
+            else {
+                epoch_att.getValues(epoch_start_str);
+            }
         }
-    }
+    } 
     catch(const netCDF::exceptions::NcException& e) {
         std::cerr<<e.what()<<std::endl;
-        log_stream << "Warning using defualt epoc string\n";
+        log_stream << "Warning using default epoc string\n";
     }
     
     std::tm tm{};
@@ -283,7 +296,7 @@ const std::vector<std::string>& NetCDFPerFeatureDataProvider::get_ids() const
     return loc_ids;
 }
 
-/** Return the first valid time for which data from the request variable  can be requested */
+/** Return the first valid time for which data from the request variable can be requested */
 long NetCDFPerFeatureDataProvider::get_data_start_time() const
 {
     //return start_time;
