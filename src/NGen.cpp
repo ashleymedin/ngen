@@ -173,6 +173,13 @@ int main(int argc, char *argv[]) {
     // the interpreter alive till the end of `main`
     auto _interp = utils::ngenPy::InterpreterUtil::getInstance();
     //utils::ngenPy::InterpreterUtil::getInstance();
+    // force multiprocessing to use spawn (safe on macOS)
+    try {
+        auto multiprocessing = py::module_::import("multiprocessing");
+        multiprocessing.attr("set_start_method")("spawn", py::arg("force")=true);
+    } catch (py::error_already_set &e) {
+        std::cerr << "WARN: could not set multiprocessing start_method: " << e.what() << std::endl;
+    }
     #endif // NGEN_WITH_PYTHON
 
     //Pull a few "options" form the cli input, this is a temporary solution to CLI parsing!
