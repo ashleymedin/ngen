@@ -137,5 +137,5 @@ data/forcing/huc01_demo/
 data/hydrofabric/huc01_demo/
 
 # output files
-*.csv
+test/data/routing/*.csv
 
