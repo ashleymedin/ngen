@@ -3,7 +3,6 @@ add_library(NGen::ngen_bmi ALIAS ngen_bmi)
 
 target_include_directories(ngen_bmi
   PUBLIC
-    "${CMAKE_CURRENT_BINARY_DIR}/include"   # ensure configured NGenConfig.h is found
     ${NGEN_INC_DIR}
 )
 
