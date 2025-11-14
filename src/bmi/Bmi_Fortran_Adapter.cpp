@@ -69,7 +69,7 @@ std::string Bmi_Fortran_Adapter::GetTimeUnits() {
     return {time_units_cstr};
 }
 
-void Bmi_Fortran_Adapter::GetValueAtIndices(std::string name, void *dest, int *inds, int count) {
+void Bmi_Fortran_Adapter::GetValueAtIndices(const std::string name, void *dest, int *inds, int count) {
     // TODO: implement later by manually handling index convertion on this level.
     /*
     if (get_value_at_indices(&bmi_model->handle, name.c_str(), dest, inds, count) != BMI_SUCCESS) {
@@ -81,7 +81,7 @@ void Bmi_Fortran_Adapter::GetValueAtIndices(std::string name, void *dest, int *i
     throw std::runtime_error("Fortran BMI module integration does not currently support getting values by index");
 }
 
-int Bmi_Fortran_Adapter::GetVarItemsize(std::string name) {
+int Bmi_Fortran_Adapter::GetVarItemsize(const std::string name) {
     int size;
     if (get_var_itemsize(&bmi_model->handle, name.c_str(), &size) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get variable item size for " + name + ".");
@@ -89,7 +89,7 @@ int Bmi_Fortran_Adapter::GetVarItemsize(std::string name) {
     return size;
 }
 
-int Bmi_Fortran_Adapter::GetVarNbytes(std::string name) {
+int Bmi_Fortran_Adapter::GetVarNbytes(const std::string name) {
     int size;
     if (get_var_nbytes(&bmi_model->handle, name.c_str(), &size) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get variable array size (i.e., nbytes) for " + name + ".");
@@ -97,11 +97,11 @@ int Bmi_Fortran_Adapter::GetVarNbytes(std::string name) {
     return size;
 }
 
-std::string Bmi_Fortran_Adapter::GetVarType(std::string name) {
+std::string Bmi_Fortran_Adapter::GetVarType(const std::string name) {
     return inner_get_var_type(name);
 }
 
-std::string Bmi_Fortran_Adapter::GetVarUnits(std::string name) {
+std::string Bmi_Fortran_Adapter::GetVarUnits(const std::string name) {
     char units_c_str[BMI_MAX_UNITS_NAME];
     if (get_var_units(&bmi_model->handle, name.c_str(), units_c_str) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get variable units for " + name + ".");
@@ -109,7 +109,7 @@ std::string Bmi_Fortran_Adapter::GetVarUnits(std::string name) {
     return std::string(units_c_str);
 }
 
-std::string Bmi_Fortran_Adapter::GetVarLocation(std::string name) {
+std::string Bmi_Fortran_Adapter::GetVarLocation(const std::string name) {
     char location_c_str[BMI_MAX_LOCATION_NAME];
     if (get_var_location(&bmi_model->handle, name.c_str(), location_c_str) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get variable location for " + name + ".");
@@ -117,7 +117,7 @@ std::string Bmi_Fortran_Adapter::GetVarLocation(std::string name) {
     return std::string(location_c_str);
 }
 
-int Bmi_Fortran_Adapter::GetVarGrid(std::string name) {
+int Bmi_Fortran_Adapter::GetVarGrid(const std::string name) {
     int grid;
     if (get_var_grid(&bmi_model->handle, name.c_str(), &grid) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get variable grid for " + name + ".");
@@ -149,7 +149,7 @@ int Bmi_Fortran_Adapter::GetGridSize(int grid_id) {
     return gridsize;
 }
 
-void Bmi_Fortran_Adapter::SetValue(std::string name, void *src) {
+void Bmi_Fortran_Adapter::SetValue(const std::string name, void *src) {
     inner_set_value(name, src);
 }
 
@@ -157,7 +157,7 @@ bool Bmi_Fortran_Adapter::is_model_initialized() {
     return model_initialized;
 }
 
-void Bmi_Fortran_Adapter::SetValueAtIndices(std::string name, int *inds, int count, void *src) {
+void Bmi_Fortran_Adapter::SetValueAtIndices(const std::string name, int *inds, int count, void *src) {
     // TODO: implement later by manually handling index convertion on this level.
     /*
     int result = set_value_at_indices(&bmi_model->handle, name.c_str(), inds, count, src);
@@ -281,5 +281,8 @@ void Bmi_Fortran_Adapter::GetGridNodesPerFace(int grid, int *nodes_per_face) {
         throw std::runtime_error(model_name + " failed to get grid " + std::to_string(grid) + " nodes per face.");
     }
 }
+
+// Out-of-line key function to force vtable/typeinfo emission
+Bmi_Fortran_Adapter::~Bmi_Fortran_Adapter() = default;
 
 #endif // NGEN_WITH_BMI_FORTRAN
