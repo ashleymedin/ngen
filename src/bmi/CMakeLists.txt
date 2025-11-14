@@ -24,15 +24,18 @@ target_sources(ngen_bmi
 )
 
 if(NGEN_WITH_BMI_C)
+    message (STATUS "Configuring C BMI support in ngen_bmi HHHHHHHHHHHHHHHHHHHHHHHH")
     target_sources(ngen_bmi PRIVATE "${CMAKE_CURRENT_LIST_DIR}/Bmi_C_Adapter.cpp")
 endif()
 
 if(NGEN_WITH_PYTHON)
+    message (STATUS "Configuring Python BMI support in ngen_bmi HHHHHHHHHHHHHHHHHHH")
     target_sources(ngen_bmi PRIVATE "${CMAKE_CURRENT_LIST_DIR}/Bmi_Py_Adapter.cpp")
     target_link_libraries(ngen_bmi PUBLIC pybind11::embed)
 endif()
 
 if(NGEN_WITH_BMI_FORTRAN)
+    message (STATUS "Configuring Fortran BMI support in ngen_bmi HHHHHHHHHHHHHHHHHHHHHHHHH")
     target_sources(ngen_bmi PRIVATE "${CMAKE_CURRENT_LIST_DIR}/Bmi_Fortran_Adapter.cpp")
     target_link_libraries(ngen_bmi PUBLIC iso_c_bmi)
 endif()
