@@ -34,9 +34,9 @@ namespace realization {
 #if NGEN_WITH_BMI_C
         {"bmi_c", create_formulation_constructor<Bmi_C_Formulation>()},
 #endif // NGEN_WITH_BMI_C
-#if NGEN_WITH_BMI_FORTRAN
+//#if NGEN_WITH_BMI_FORTRAN
         {"bmi_fortran", create_formulation_constructor<Bmi_Fortran_Formulation>()},
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN
         {"bmi_multi", create_formulation_constructor<Bmi_Multi_Formulation>()},
 #if NGEN_WITH_PYTHON
         {"bmi_python", create_formulation_constructor<Bmi_Py_Formulation>()},

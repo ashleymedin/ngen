@@ -3,7 +3,7 @@
 
 #include <NGenConfig.h>
 
-#if NGEN_WITH_BMI_FORTRAN
+//#if NGEN_WITH_BMI_FORTRAN
 
 /**
  * The extern free functions from the Nextgen common Fortran static library for integrating with Fortran BMI modules.
@@ -131,6 +131,6 @@ extern "C" {
     extern int get_grid_nodes_per_face(void *fortran_bmi_handle, int *grid, int *nodes_per_face);
 }
 
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN
 
 #endif //NGEN_BMI_FORTRAN_COMMON_H

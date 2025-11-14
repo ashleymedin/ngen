@@ -1,6 +1,11 @@
 #include <NGenConfig.h>
-
-#if NGEN_WITH_BMI_FORTRAN
+#if (NGEN_WITH_BMI_FORTRAN==0)
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#pragma message("Using NGenConfig.h: " __FILE__)
+# error "NGEN_WITH_BMI_FORTRAN is not enabled for this TU; check include paths and config header"
+#endif
+//#if NGEN_WITH_BMI_FORTRAN
 #include "bmi/Bmi_Fortran_Adapter.hpp"
 
 using namespace models::bmi;
@@ -282,4 +287,4 @@ void Bmi_Fortran_Adapter::GetGridNodesPerFace(int grid, int *nodes_per_face) {
     }
 }
 
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN

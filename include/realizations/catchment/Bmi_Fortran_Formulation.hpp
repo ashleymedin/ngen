@@ -3,7 +3,7 @@
 
 #include <NGenConfig.h>
 
-#if NGEN_WITH_BMI_FORTRAN
+//#if NGEN_WITH_BMI_FORTRAN
 
 #include "Bmi_Module_Formulation.hpp"
 #include <GenericDataProvider.hpp>
@@ -53,6 +53,6 @@ namespace realization {
 
 }
 
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN
 
 #endif //NGEN_BMI_FORTRAN_FORMULATION_HPP

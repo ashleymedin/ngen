@@ -3,7 +3,7 @@
 
 #include <NGenConfig.h>
 
-#if NGEN_WITH_BMI_FORTRAN
+//#if NGEN_WITH_BMI_FORTRAN
 
 #include "AbstractCLibBmiAdapter.hpp"
 #include "Bmi_Fortran_Common.h"
@@ -811,6 +811,6 @@ namespace models {
     }
 }
 
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN
 
 #endif //NGEN_BMI_FORTRAN_ADAPTER_HPP

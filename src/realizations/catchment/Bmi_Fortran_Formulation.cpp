@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-#if NGEN_WITH_BMI_FORTRAN
+//#if NGEN_WITH_BMI_FORTRAN
 
 #include "Bmi_Fortran_Formulation.hpp"
 #include "Bmi_Fortran_Adapter.hpp"
@@ -90,4 +90,4 @@ double Bmi_Fortran_Formulation::get_var_value_as_double(const int &index, const 
     " as double: no logic for converting variable type " + type);
 }
 
-#endif // NGEN_WITH_BMI_FORTRAN
+//#endif // NGEN_WITH_BMI_FORTRAN
