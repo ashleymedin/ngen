@@ -23,3 +23,8 @@ target_link_libraries(realizations_catchment PUBLIC
         NGen::ngen_bmi
         )
 
+add_custom_target(announce_realizations_catchment
+  COMMAND ${CMAKE_COMMAND} -E echo "Building realizations_catchment"
+  COMMENT "Announce realizations_catchment build"
+)
+add_dependencies(realizations_catchment announce_realizations_catchment)
