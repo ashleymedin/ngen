@@ -60,9 +60,6 @@ cmake_dependent_option(NGEN_WITH_COVERAGE "Build with test coverage" OFF "NGEN_W
 
 option(BMI_FORTRAN_ISO_C_LIB_DIR "Directory hint for middleware Fortran shared lib handling iso_c_binding" "${NGEN_ROOT_DIR}/extern/iso_c_fortran_bmi/cmake_build")
 option(BMI_FORTRAN_ISO_C_LIB_NAME "Name for middleware Fortran shared lib handling iso_c_binding" "iso_c_bmi")
-if(NOT DEFINED BMI_FORTRAN_ISO_C_LIB_PATH OR BMI_FORTRAN_ISO_C_LIB_PATH STREQUAL "")
-    set(BMI_FORTRAN_ISO_C_LIB_PATH "${BMI_FORTRAN_ISO_C_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${BMI_FORTRAN_ISO_C_LIB_NAME}.${CMAKE_SHARED_LIBRARY_SUFFIX}")
-endif()
 
 include(DeprecatedOptions)
 deprecated_option(OLD MPI_ACTIVE            NEW NGEN_WITH_MPI     INCLUDE_ENV)
