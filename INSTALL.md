@@ -105,6 +105,6 @@ cmake --build build --target ngen -- -j 2
 
 ---
 
-**Further information on each step: **
+**Further information on each step:**
 
 Make sure all necessary [dependencies](doc/DEPENDENCIES.md) are installed, and then [build the main ngen target with CMake](doc/BUILDS_AND_CMAKE.md).  Then run the executable, as described [here for basic use](README.md#usage) or [here for distributed execution](doc/DISTRIBUTED_PROCESSING.md#examples). A step by step [instruction](https://github.com/NOAA-OWP/ngen/wiki/NGen-Tutorial) and install with more [options](https://github.com/NOAA-OWP/ngen/wiki/Building) are also provided on our wiki page.
