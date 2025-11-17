@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-//#if NGEN_WITH_BMI_FORTRAN
+#if NGEN_WITH_BMI_FORTRAN
 #include "bmi/Bmi_Fortran_Adapter.hpp"
 
 using namespace models::bmi;
@@ -10,15 +10,6 @@ std::string Bmi_Fortran_Adapter::GetComponentName() {
     if (get_component_name(&bmi_model->handle, component_name) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get model component name.");
     }
-    static bool _ngen_cfg_printed = []() -> bool {
-        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
-        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
-        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
-        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
-        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
-        return true;
-    }();
-    return {component_name};
 }
 
 double Bmi_Fortran_Adapter::GetCurrentTime() {
@@ -290,4 +281,4 @@ void Bmi_Fortran_Adapter::GetGridNodesPerFace(int grid, int *nodes_per_face) {
     }
 }
 
-//#endif // NGEN_WITH_BMI_FORTRAN
+#endif // NGEN_WITH_BMI_FORTRAN

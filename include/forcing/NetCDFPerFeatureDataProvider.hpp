@@ -71,6 +71,15 @@ namespace data_access
 
         void finalize() override;
 
+        static bool _ngen_cfg_printed = []() -> bool {
+            std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+            std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+            std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+            std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+            std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+        return true;
+        }();
+
         /** Return the variables that are accessable by this data provider */
         boost::span<const std::string> get_available_variable_names() const override;
 
