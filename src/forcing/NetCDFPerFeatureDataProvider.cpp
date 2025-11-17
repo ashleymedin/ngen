@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-//#if NGEN_WITH_NETCDF
+#if NGEN_WITH_NETCDF
 #include "NetCDFPerFeatureDataProvider.hpp"
 
 #include <netcdf>
@@ -28,14 +28,6 @@ void NetCDFPerFeatureDataProvider::cleanup_shared_providers()
     const std::lock_guard<std::mutex> lock(shared_providers_mutex);
     // First lets try just emptying the map... if all goes well, everything will destruct properly on its own...
     shared_providers.clear();
-    static bool _ngen_cfg_printed = []() -> bool {
-        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
-        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
-        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
-        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
-        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
-        return true;
-    }();
 }
 
 NetCDFPerFeatureDataProvider::NetCDFPerFeatureDataProvider(std::string input_path, time_t sim_start, time_t sim_end,  utils::StreamHandler log_s, bool enable_cache) : log_stream(log_s), value_cache(20),
@@ -493,4 +485,4 @@ const std::string& NetCDFPerFeatureDataProvider::get_ncvar_units(const std::stri
 
 }
 
-//#endif
+#endif
