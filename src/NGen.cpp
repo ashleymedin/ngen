@@ -216,9 +216,9 @@ int main(int argc, char *argv[]) {
         #if NGEN_WITH_NETCDF
         std::cout<<"  NetCDF lumped forcing enabled"<<std::endl;
         #endif
-        //#if NGEN_WITH_BMI_FORTRAN
+        #if NGEN_WITH_BMI_FORTRAN
         std::cout<<"  Fortran BMI enabled"<<std::endl;
-        //#endif
+        #endif
         #if NGEN_WITH_BMI_C
         std::cout<<"  C BMI enabled"<<std::endl;
         #endif

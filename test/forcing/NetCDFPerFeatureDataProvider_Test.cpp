@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-//#if NGEN_WITH_NETCDF
+#if NGEN_WITH_NETCDF
 #include <vector>
 #include "gtest/gtest.h"
 #include "NetCDFPerFeatureDataProvider.hpp"
@@ -114,4 +114,4 @@ TEST_F(NetCDFPerFeatureDataProviderTest, TestForcingDataRead)
         std::runtime_error);
     
 }
-//#endif
+#endif
