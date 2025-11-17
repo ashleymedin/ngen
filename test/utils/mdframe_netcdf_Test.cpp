@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-//#if NGEN_WITH_NETCDF
+#if NGEN_WITH_NETCDF
 #include <netcdf>
 #endif
 

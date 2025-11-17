@@ -28,7 +28,13 @@ namespace realization {
             return std::make_shared<T>(id, forcing_provider, output_stream);
         };
     }
-
+    static bool _ngen_cfg_printed = []() -> bool {
+        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+    }();
     std::map<std::string, constructor> formulations = {
         {"bmi_c++", create_formulation_constructor<Bmi_Cpp_Formulation>()},
 #if NGEN_WITH_BMI_C

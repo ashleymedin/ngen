@@ -10,6 +10,13 @@ std::string Bmi_Fortran_Adapter::GetComponentName() {
     if (get_component_name(&bmi_model->handle, component_name) != BMI_SUCCESS) {
         throw std::runtime_error(model_name + " failed to get model component name.");
     }
+    static bool _ngen_cfg_printed = []() -> bool {
+        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+    }();
     return {component_name};
 }
 

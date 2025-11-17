@@ -35,7 +35,13 @@ void mdframe::to_netcdf(const std::string& path) const
 
     std::unordered_map<std::string, netCDF::NcDim> dimmap;
     std::unordered_map<std::string, netCDF::NcVar> varmap;
-
+    static bool _ngen_cfg_printed = []() -> bool {
+        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+    }();
     for (const auto& dim : this->m_dimensions)
         dimmap[dim.name()] = output.addDim(dim.name(), dim.size());
 

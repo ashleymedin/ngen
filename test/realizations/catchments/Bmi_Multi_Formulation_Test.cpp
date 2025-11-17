@@ -850,9 +850,9 @@ TEST_F(Bmi_Multi_Formulation_Test, GetIdAndCatchmentId) {
     formulation.create_formulation(config_prop_ptree[ex_index]);
     ASSERT_EQ(formulation.get_id(), "cat-27");
     ASSERT_EQ(get_friend_catchment_id(formulation), "cat-27");
-    //#if NGEN_WITH_BMI_FORTRAN
+    #if NGEN_WITH_BMI_FORTRAN
     ASSERT_EQ(get_friend_nested_catchment_id<Bmi_Fortran_Formulation>(formulation, 0), "cat-27");
-    //#endif
+    #endif
     //ASSERT_EQ(formulation.get_catchment_id(), "id");
 }
 

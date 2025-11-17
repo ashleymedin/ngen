@@ -25,6 +25,13 @@ std::shared_ptr<NetCDFPerFeatureDataProvider> NetCDFPerFeatureDataProvider::get_
 
 void NetCDFPerFeatureDataProvider::cleanup_shared_providers()
 {
+    static bool _ngen_cfg_printed = []() -> bool {
+        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+    }();
     const std::lock_guard<std::mutex> lock(shared_providers_mutex);
     // First lets try just emptying the map... if all goes well, everything will destruct properly on its own...
     shared_providers.clear();

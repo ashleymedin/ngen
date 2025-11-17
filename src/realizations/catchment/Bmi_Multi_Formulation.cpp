@@ -20,7 +20,8 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
         std::fprintf(stderr, "Using TU: %s\n", __FILE__);
         std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
         std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
-        return true;
+        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
+        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
     }();
     if (needs_param_validation) {
         validate_parameters(properties);
@@ -74,11 +75,11 @@ void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap proper
         }
         if (type_name == "bmi_fortran") {
 
-            //#if NGEN_WITH_BMI_FORTRAN
+            #if NGEN_WITH_BMI_FORTRAN
             module = init_nested_module<Bmi_Fortran_Formulation>(i, identifier, formulation_config.at("params").get_values());
-            //#else
-            //inactive_type_requested = true;
-            //#endif
+            #else
+            inactive_type_requested = true;
+            #endif
         }
         if (type_name == "bmi_python") {
             #if NGEN_WITH_PYTHON
