@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
 #include "NetCDFPerFeatureDataProvider.hpp"
 
 #include <netcdf>
@@ -485,4 +485,4 @@ const std::string& NetCDFPerFeatureDataProvider::get_ncvar_units(const std::stri
 
 }
 
-#endif
+//#endif

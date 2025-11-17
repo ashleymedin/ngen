@@ -17,9 +17,9 @@
 #include <GenericDataProvider.hpp>
 #include "CsvPerFeatureForcingProvider.hpp"
 #include "NullForcingProvider.hpp"
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
     #include "NetCDFPerFeatureDataProvider.hpp"
-#endif
+//#endif
 
 namespace realization {
     template<class T>

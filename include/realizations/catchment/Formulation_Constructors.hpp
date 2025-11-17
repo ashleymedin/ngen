@@ -15,9 +15,9 @@
 #include <GenericDataProvider.hpp>
 #include "CsvPerFeatureForcingProvider.hpp"
 #include "NullForcingProvider.hpp"
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
     #include "NetCDFPerFeatureDataProvider.hpp"
-#endif
+//#endif
 
 namespace realization {
     using constructor = std::shared_ptr<Catchment_Formulation> (*)(std::string, std::shared_ptr<data_access::GenericDataProvider>, utils::StreamHandler);
@@ -47,11 +47,11 @@ namespace realization {
         if (forcing_config.provider == "CsvPerFeature" || forcing_config.provider == ""){
             fp = std::make_shared<CsvPerFeatureForcingProvider>(forcing_config);
         }
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
         else if (forcing_config.provider == "NetCDF"){
             fp = data_access::NetCDFPerFeatureDataProvider::get_shared_provider(forcing_config.path, forcing_config.simulation_start_t, forcing_config.simulation_end_t, output_stream, forcing_config.enable_cache);
         }
-#endif
+//#endif
         else if (forcing_config.provider == "NullForcingProvider"){
             fp = std::make_shared<NullForcingProvider>();
         }

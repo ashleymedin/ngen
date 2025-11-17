@@ -2,7 +2,7 @@
 
 #include <NGenConfig.h>
 
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
 
 #include <netcdf>
 
@@ -86,4 +86,4 @@ namespace ngen {
     }
 }
 
-#endif // NGEN_WITH_NETCDF
+//#endif // NGEN_WITH_NETCDF

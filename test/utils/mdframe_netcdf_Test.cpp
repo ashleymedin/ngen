@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#if NGEN_WITH_NETCDF
+//#if NGEN_WITH_NETCDF
 #include <netcdf>
 #endif
 
@@ -96,5 +96,5 @@ TEST_F(mdframe_netcdf_Test, io_netcdf)
     }
 
   ex.close();
-#endif
+//#endif
 }
