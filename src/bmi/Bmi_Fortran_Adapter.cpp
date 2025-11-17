@@ -16,6 +16,7 @@ std::string Bmi_Fortran_Adapter::GetComponentName() {
         std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
         std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
         std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
+        return true;
     }();
     return {component_name};
 }
