@@ -3,7 +3,7 @@
 
 #include <NGenConfig.h>
 
-//#if NGEN_WITH_NETCDF
+#if NGEN_WITH_NETCDF
 
 #include "GenericDataProvider.hpp"
 #include "DataProviderSelectors.hpp"
@@ -147,5 +147,5 @@ namespace data_access
 }
 
 
-//#endif // NGEN_WITH_NETCDF
+#endif // NGEN_WITH_NETCDF
 #endif // NGEN_NETCDF_PER_FEATURE_DATAPROVIDER_HPP
