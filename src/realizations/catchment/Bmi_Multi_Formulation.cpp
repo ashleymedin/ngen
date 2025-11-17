@@ -11,10 +11,17 @@
 #include "Bmi_C_Formulation.hpp"
 #include "Bmi_Fortran_Formulation.hpp"
 #include "Bmi_Py_Formulation.hpp"
+#include <cstdio>
 
 using namespace realization;
 
 void Bmi_Multi_Formulation::create_multi_formulation(geojson::PropertyMap properties, bool needs_param_validation) {
+    static bool _ngen_cfg_printed = []() -> bool {
+        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
+        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
+        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
+        return true;
+    }();
     if (needs_param_validation) {
         validate_parameters(properties);
     }
