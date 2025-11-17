@@ -1,6 +1,6 @@
 #include <NGenConfig.h>
 
-//#if NGEN_WITH_BMI_FORTRAN
+#if NGEN_WITH_BMI_FORTRAN
 
 #include "Bmi_Fortran_Formulation.hpp"
 #include "Bmi_Fortran_Adapter.hpp"
@@ -53,14 +53,6 @@ double Bmi_Fortran_Formulation::get_var_value_as_double(const int &index, const 
     std::string type = model->GetVarType(var_name);
     //Can cause a segfault here if GetValue returns an empty vector...a "fix" in bmi_utilities GetValue
     //will throw a relevant runtime_error if the vector is empty, so this is safe to use this way for now...
-    static bool _ngen_cfg_printed = []() -> bool {
-        std::fprintf(stderr, "Using TU: %s\n", __FILE__);
-        std::fprintf(stderr, "NGEN_WITH_NETCDF = %d\n", NGEN_WITH_NETCDF);
-        std::fprintf(stderr, "NGEN_WITH_BMI_FORTRAN = %d\n", NGEN_WITH_BMI_FORTRAN);
-        std::fprintf(stderr, "NGEN_WITH_BMI_C = %d\n", NGEN_WITH_BMI_C);
-        std::fprintf(stderr, "NGEN_WITH_PYTHON = %d\n", NGEN_WITH_PYTHON);
-    }();
-
     if (type == "long double")
         return (double) (models::bmi::GetValue<long double>(*model, var_name))[index];
 
@@ -98,4 +90,4 @@ double Bmi_Fortran_Formulation::get_var_value_as_double(const int &index, const 
     " as double: no logic for converting variable type " + type);
 }
 
-//#endif // NGEN_WITH_BMI_FORTRAN
+#endif // NGEN_WITH_BMI_FORTRAN
