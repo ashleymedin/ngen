@@ -463,7 +463,7 @@ void Bmi_Multi_Formulation_Test::SetUp() {
 
     #if !NGEN_WITH_BMI_FORTRAN
     throw std::runtime_error("Error: can't run multi BMI tests for scenario at index 0 without BMI Fortran functionality active" SOURCE_LOC);
-    //#endif // NGEN_WITH_BMI_FORTRAN
+    #endif // NGEN_WITH_BMI_FORTRAN
 
 
     initializeTestExample(0, "cat-27", {std::string(BMI_FORTRAN_TYPE), std::string(BMI_C_TYPE)}, {});
@@ -472,7 +472,7 @@ void Bmi_Multi_Formulation_Test::SetUp() {
 
     #if !NGEN_WITH_BMI_FORTRAN
     throw std::runtime_error("Error: can't run multi BMI tests for scenario at index 1 without BMI Fortran functionality active" SOURCE_LOC);
-    //#endif // NGEN_WITH_BMI_FORTRAN
+    #endif // NGEN_WITH_BMI_FORTRAN
 
     #if !NGEN_WITH_PYTHON
     throw std::runtime_error("Error: can't run multi BMI tests for scenario at index 1 without BMI Python functionality active" SOURCE_LOC);
