@@ -96,5 +96,5 @@ TEST_F(mdframe_netcdf_Test, io_netcdf)
     }
 
   ex.close();
-//#endif
+#endif
 }

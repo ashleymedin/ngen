@@ -102,9 +102,7 @@ Copy this script (perhaps modified) to the directory above your main ngen direct
     $ cd ${NGEN_DIR}/ngen
     $ ./build_ngen.bash
 
-To run test basin at gauge 01073000, still in the main ngen directory, run
-    $ ./cmake_build/ngen ./data/gauge_01073000/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/test_ngen/example_realization_config_w_summa_bmi_routing.json
-To test without routing, run the above command leaving out `_routing`.  Be sure to install and activate a python environment that supports the routing if you wish to use routing, as described above. 
-
-This command can be run as `./extern/summa/summa/test_ngen/example_run.sh` also, from the main ngen directory.  Non-routed output is currently commented out. 
+To run the test basin with routing at gauge 01073000, still in the main ngen directory, run
+    $ ./extern/summa/summa/test_ngen/example_run.shexample_realization_config_w_summa_bmi_routing.json
+Be sure to install and activate a python environment that supports the routing.
 
