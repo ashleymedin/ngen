@@ -42,8 +42,8 @@
 	branch = master
 [submodule "extern/summa"]
 	path = extern/summa/summa
-	url = https://github.com/ashleymedin/summa.git
-	branch = develop
+	url = https://github.com/CH-Earth/summa.git
+	branch = develop_sundials
 [submodule "extern/netcdf-cxx4"]
 	path = extern/netcdf-cxx4/netcdf-cxx4
 	url = https://github.com/Unidata/netcdf-cxx4/
