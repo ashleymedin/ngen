@@ -91,7 +91,7 @@ We suggest you periodically update to the latest version. It is also possible to
     
 Note if you need to recompile after a system upgrade, delete the contents of sundials/instdir and sundials/buildir EXCEPT sundials/buildir/build_cmakeSundials.bash before building and installing.
 
-### Building and installing SUMMA within NexGen
+### Building and installing SUMMA within Next Gen
 We suggest using a version of the example build script for SUMMA and NextGen included in `summa/build/cmake/build_ngen.[mac or cluster].bash` (be sure to look a the `mac` version if you are running on a Mac, a Linux machine can use a variant of the cluster script). 
 Note (similar to above) that when there is an existing directory, it may sometimes be necessary to clear it and regenerate, especially if any changes were made to the CMakeLists.txt file.
 
@@ -102,8 +102,8 @@ Copy this script (perhaps modified) to the directory above your main ngen direct
     $ cd ${NGEN_DIR}/ngen
     $ ./build_ngen.bash
 
-The example build scripts activate the conda environment named by `PYNGEN_CONDA_ENV` (default
-`ngen`) and pass that interpreter to CMake.  ngen does not support `numpy>=2.0`, so that
+The example build scripts activate the conda environment named by `NGEN_CONDA_ENV` (default
+`ngen`) and pass that interpreter to CMake.  Next Gen does not support `numpy>=2.0`, so that
 environment must have `numpy<2` (the `environment.yml` above pins this).
 
 ### Building t-route (for routing)
@@ -129,9 +129,24 @@ installs in the wrong order, and only makes the first path editable.  Two common
     `compiler.sh` uses `--no-build-isolation`, so Cython, `numpy<2` and wheel must already be
     installed there.  Check with `python -c "import sys; print(sys.prefix)"`.
 
-To run test basin at gauge 01073000, still in the main ngen directory, run
-    $ ./cmake_build/ngen ./data/gauge_01073000/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/test_ngen/example_realization_config_w_summa_bmi_routing.json
-To test without routing, run the above command leaving out `_routing`.  For the routed run, build and activate the t-route environment first (see [Building t-route](#building-t-route-for-routing) above). 
+To run the gauge 01073000 test basin, from the main ngen directory run
 
-This command can be run as `./extern/summa/summa/test_ngen/example_run.sh` also, from the main ngen directory.  Non-routed output is currently commented out. 
+    $ ./extern/summa/summa/test_ngen/example_run.sh
+
+This is the recommended path: the script activates the `ngen` conda environment (override with
+`NGEN_CONDA_ENV`), pins `VIRTUAL_ENV` to it, checks that `nwm_routing` imports, then runs
+
+    $ ./cmake_build/ngen ./test/data/routing/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/test_ngen/gauge_01073000/settings/example_realization_config_w_summa_bmi.json
+    $ python -m nwm_routing -V4 -f ./test/data/routing/ngen_routing_config_unit_test.yaml
+
+The first command runs SUMMA through its BMI; the second routes the resulting nexus output with
+t-route.  To run ngen only (no routing), run just the first command with the
+`example_realization_config_w_summa_bmi.json` realization.  `domain_provo/` has an equivalent
+`provo_run.sh`.
+
+If you run the `ngen` command by hand rather than through the script, first
+`conda activate <your ngen env>` **and** `export VIRTUAL_ENV="$CONDA_PREFIX"` -- ngen globs
+`**/site-packages/` under `$VIRTUAL_ENV` for its embedded interpreter, so a `VIRTUAL_ENV` left
+pointing at a conda root (VS Code's Python extension does this) pulls every environment's
+packages onto `sys.path` and segfaults on an incompatible NumPy.
 
