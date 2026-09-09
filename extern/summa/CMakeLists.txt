@@ -145,6 +145,7 @@ set(ENGINE_DIR ${F_MASTER}/build/source/engine)
 set(HOOKUP_DIR ${F_MASTER}/build/source/hookup)
 set(NETCDF_DIR ${F_MASTER}/build/source/netcdf)
 set(NOAHMP_DIR ${F_MASTER}/build/source/noah-mp)
+set(NUMREC_DIR ${F_MASTER}/build/source/numrec)
 
 #=========================================================================================
 # COMPILE PART 2: Assemble all of the SUMMA sub-routines
@@ -152,6 +153,9 @@ set(NOAHMP_DIR ${F_MASTER}/build/source/noah-mp)
 
 # SUMMA Source Files are defined in the CMakeLists.txt file in the subdirectory
 add_subdirectory(${F_MASTER}/build/source/)
+
+# Noah-MP files use free-form syntax even though they use .F extension.
+set_source_files_properties(${NOAHMP} PROPERTIES Fortran_FORMAT FREE)
 
 
 #=========================================================================================
@@ -163,7 +167,7 @@ set(SUMMA_ALL ${NETCDF} ${PRELIM} ${MODRUN} ${SOLVER} ${DRIVER})
 set(MAIN_SUMMA ${DRIVER_DIR}/summa_driver.f90)
 
 if (USE_NEXTGEN)
-    set(SUMMA_ALL ${SUMMA_ALL} ${DRIVER_NEXTGEN})
+    set(SUMMA_ALL ${SUMMA_ALL} ${DRIVER_BMI})
 endif()
 
 if (USE_SUNDIALS)

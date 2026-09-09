@@ -49,15 +49,15 @@ Note that this will be done in the NGen repo configuration, so it can then be co
 
 If you plan on using any of the NextGen python modules (e.g. routing with t-route), you likely need to build a python environment for NextGen.  An example environment is included in `summa/test_ngen/python_env/environment.yml`. ON a Linux machine, you can run
     $ cd ${NGEN_DIR}/ngen/extern/summa/summa/test_ngen/python_env
-    $ conda env create -f environment.yml -n pyngen  
-    $ conda activate pyngen
+    $ conda env create -f environment.yml -n ngen  
+    $ conda activate ngen
 On a Mac, you can run 
     $ cd ${NGEN_DIR}/ngen/extern/summa/summa/test_ngen/python_env
     $ conda install -n base -c conda-forge mamba -y
     $ export CONDA_SUBDIR=osx-arm64
-    $ mamba env create -f environment.yml -n pyngen
+    $ mamba env create -f environment.yml -n ngen
     $ unset CONDA_SUBDIR
-    $ conda activate pyngen
+    $ conda activate ngen
 
 If you want to use Sundials IDA or BE Kinsol, before summa can be built Sundials needs to be installed. 
 
@@ -102,9 +102,36 @@ Copy this script (perhaps modified) to the directory above your main ngen direct
     $ cd ${NGEN_DIR}/ngen
     $ ./build_ngen.bash
 
+The example build scripts activate the conda environment named by `PYNGEN_CONDA_ENV` (default
+`ngen`) and pass that interpreter to CMake.  ngen does not support `numpy>=2.0`, so that
+environment must have `numpy<2` (the `environment.yml` above pins this).
+
+### Building t-route (for routing)
+
+Routing is provided by the *t-route* Python package in `${NGEN_DIR}/ngen/extern/t-route`, which
+has Cython/Fortran extensions that must be compiled and installed into the *same* Python
+environment the ngen build used.  Use the bundled script (run it with that environment active):
+
+    $ conda activate ngen                                 # the numpy<2 / Cython env from above
+    $ cd ${NGEN_DIR}/ngen/extern/t-route
+    $ F90=<gfortran> CC=<gcc> ./compiler.sh               # Linux
+    $ F90=/opt/local/bin/gfortran CC=/opt/local/bin/gcc ./compiler_mac.sh   # Mac
+
+It builds the kernel objects under `src/kernel/{muskingum,diffusive,reservoir}` and then
+`pip install`s the `troute-*` packages in dependency order (network, routing, config, nwm, bmi).
+Pass `no-e` as the first argument to install them non-editable.
+
+Do not run `pip install -e extern/t-route/src/troute-*` by hand; it skips the kernel builds,
+installs in the wrong order, and only makes the first path editable.  Two common failures:
+  - `Could not identify fortran compiler!` -- `F90` (or `FC`) is unset, so the build falls back
+    to `which fc` and finds the shell `fc` builtin.  Export `F90`/`FC` to your gfortran.
+  - `No module named 'Cython'` -- the wrong environment is active (e.g. conda `base`).
+    `compiler.sh` uses `--no-build-isolation`, so Cython, `numpy<2` and wheel must already be
+    installed there.  Check with `python -c "import sys; print(sys.prefix)"`.
+
 To run test basin at gauge 01073000, still in the main ngen directory, run
     $ ./cmake_build/ngen ./data/gauge_01073000/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/test_ngen/example_realization_config_w_summa_bmi_routing.json
-To test without routing, run the above command leaving out `_routing`.  Be sure to install and activate a python environment that supports the routing if you wish to use routing, as described above. 
+To test without routing, run the above command leaving out `_routing`.  For the routed run, build and activate the t-route environment first (see [Building t-route](#building-t-route-for-routing) above). 
 
 This command can be run as `./extern/summa/summa/test_ngen/example_run.sh` also, from the main ngen directory.  Non-routed output is currently commented out. 
 

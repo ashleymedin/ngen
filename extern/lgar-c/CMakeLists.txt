@@ -28,6 +28,7 @@ if(WIN32)
     ${LGAR_SRC_PREFIX}src/mem_funcs.cxx
     ${LGAR_SRC_PREFIX}src/util_funcs.cxx
     ${LGAR_SRC_PREFIX}src/aet.cxx
+    ${LGAR_SRC_PREFIX}src/conceptual_reservoir.cxx
     ${LGAR_SRC_PREFIX}giuh/giuh.c
     ${LGAR_SRC_PREFIX}include/all.hxx
     ${LGAR_SRC_PREFIX}giuh/giuh.h)
@@ -40,6 +41,7 @@ else()
     ${LGAR_SRC_PREFIX}src/mem_funcs.cxx
     ${LGAR_SRC_PREFIX}src/util_funcs.cxx
     ${LGAR_SRC_PREFIX}src/aet.cxx
+    ${LGAR_SRC_PREFIX}src/conceptual_reservoir.cxx
     ${LGAR_SRC_PREFIX}giuh/giuh.c
     ${LGAR_SRC_PREFIX}include/all.hxx
     ${LGAR_SRC_PREFIX}giuh/giuh.h)
