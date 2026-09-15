@@ -1,6 +1,9 @@
 #ifndef __NGEN_LAYER__
 #define __NGEN_LAYER__
 
+#include <fstream>
+#include <unordered_map>
+
 #include <NGenConfig.h>
 
 #include "LayerData.hpp"
@@ -27,18 +30,20 @@ namespace ngen
         #endif
 
         Layer(
-                const LayerDescription& desc, 
-                const std::vector<std::string>& p_u, 
-                const Simulation_Time& s_t, 
-                feature_type& f, 
-                geojson::GeoJSON cd, 
-                long idx) :
+                const LayerDescription& desc,
+                const std::vector<std::string>& p_u,
+                const Simulation_Time& s_t,
+                feature_type& f,
+                geojson::GeoJSON cd,
+                long idx,
+                std::unordered_map<std::string, std::ofstream>* catchment_lateral_flow_files = nullptr) :
             description(desc),
             processing_units(p_u),
             simulation_time(s_t),
             features(f),
             catchment_data(cd),
-            output_time_index(idx)
+            output_time_index(idx),
+            catchment_lateral_outfiles(catchment_lateral_flow_files)
         {
 
         }
@@ -140,6 +145,23 @@ namespace ngen
                     area = catchment_data->get_feature(id)->get_property("area_sqkm").as_real_number();
                 }
                 double response_m_s = response * (area * 1000000);
+
+                // Also record this catchment's own lateral contribution, keyed by the
+                // catchment's own id rather than by the nexus it drains into. At a
+                // confluence, several catchments drain into the same nexus, and the
+                // nexus can only expose their *combined* flow (see add_upstream_flow
+                // below) -- there is no way to recover each catchment's individual
+                // share of that combined value downstream. Writing it here, per
+                // catchment, before that combination happens, is what lets a routing
+                // tool credit each contributing flowpath with its own runoff instead
+                // of either dropping or conflating it with its neighbors'.
+                if (catchment_lateral_outfiles != nullptr) {
+                    auto& outfile = (*catchment_lateral_outfiles)[id];
+                    if (outfile.is_open()) {
+                        outfile << output_time_index << ", " << current_timestamp << ", " << response_m_s << std::endl;
+                    }
+                }
+
                 //update the nexus with this flow
                 for(auto& nexus : features.destination_nexuses(id)) {
                     //TODO in a DENDRITIC network, only one destination nexus per catchment
@@ -174,7 +196,10 @@ namespace ngen
         feature_type& features;
         //TODO is this really required at the top level? or can this be moved to SurfaceLayer?
         const geojson::GeoJSON catchment_data;
-        long output_time_index;       
+        long output_time_index;
+        // Optional: per-catchment lateral flow output files, keyed by catchment id.
+        // Null when the caller hasn't set up per-catchment output (e.g. DomainLayer).
+        std::unordered_map<std::string, std::ofstream>* catchment_lateral_outfiles;
 
     };
 }
