@@ -47,12 +47,12 @@ Note that this will be done in the NGen repo configuration, so it can then be co
 
 ## Building Libraries
 
-If you plan on using any of the NextGen python modules (e.g. routing with t-route), you likely need to build a python environment for NextGen.  An example environment is included in `summa/test_ngen/python_env/environment.yml`. ON a Linux machine, you can run
-    $ cd ${NGEN_DIR}/ngen/extern/summa/summa/test_ngen/python_env
+If you plan on using any of the NextGen python modules (e.g. routing with t-route), you likely need to build a python environment for NextGen.  An example environment is included in `summa/utils/test/test_ngen/python_env/environment.yml`. ON a Linux machine, you can run
+    $ cd ${NGEN_DIR}/ngen/extern/summa/summa/utils/test/test_ngen/python_env
     $ conda env create -f environment.yml -n ngen  
     $ conda activate ngen
 On a Mac, you can run 
-    $ cd ${NGEN_DIR}/ngen/extern/summa/summa/test_ngen/python_env
+    $ cd ${NGEN_DIR}/ngen/extern/summa/summa/utils/test/test_ngen/python_env
     $ conda install -n base -c conda-forge mamba -y
     $ export CONDA_SUBDIR=osx-arm64
     $ mamba env create -f environment.yml -n ngen
@@ -131,12 +131,12 @@ installs in the wrong order, and only makes the first path editable.  Two common
 
 To run the gauge 01073000 test basin, from the main ngen directory run
 
-    $ ./extern/summa/summa/test_ngen/example_run.sh
+    $ ./extern/summa/summa/utils/test/test_ngen/example_run.sh
 
 This is the recommended path: the script activates the `ngen` conda environment (override with
 `NGEN_CONDA_ENV`), pins `VIRTUAL_ENV` to it, checks that `nwm_routing` imports, then runs
 
-    $ ./cmake_build/ngen ./test/data/routing/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/test_ngen/gauge_01073000/settings/example_realization_config_w_summa_bmi.json
+    $ ./cmake_build/ngen ./test/data/routing/gauge_01073000.gpkg '' ./test/data/routing/gauge_01073000.gpkg '' ./extern/summa/summa/utils/test/test_ngen/gauge_01073000/settings/example_realization_config_w_summa_bmi.json
     $ python -m nwm_routing -V4 -f ./test/data/routing/ngen_routing_config_unit_test.yaml
 
 The first command runs SUMMA through its BMI; the second routes the resulting nexus output with
