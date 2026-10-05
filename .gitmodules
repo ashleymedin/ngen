@@ -7,8 +7,8 @@
 	url = https://github.com/pybind/pybind11
 [submodule "extern/t-route"]
 	path = extern/t-route
-	url = https://github.com/CIROH-UA/t-route.git
-	branch = ngiab
+	url = https://github.com/ashleymedin/t-route.git
+	branch = ngiab-mac
 [submodule "extern/cfe/cfe"]
 	path = extern/cfe/cfe
 	url = https://github.com/NOAA-OWP/cfe.git
